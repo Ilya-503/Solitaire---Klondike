@@ -100,6 +100,6 @@ public class Field extends JPanel {
                 gr.drawRect(30 + i * 110, 15, 72, 97);
             }
         }
-        newGame.drawKoloda(gr);     // Метод отрисовки всех стопок карт
+        newGame.drawStack(gr);     // Метод отрисовки всех стопок карт
     }
 }
