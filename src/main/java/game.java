@@ -108,20 +108,12 @@ public class game {
     public void mouseDragged(int mX, int mY) {   // При захвате карты мышью
         if (chosenStackNum >= 0) {
             Card card = cardStacks[chosenStackNum].get(chosenCardNum);
-            card.x = mX-dx;
-            card.y = mY-dy;
-            if (card.x < 0) {
-                card.x = 0;
-            }
-            if (card.x > 720) {
-                card.x = 720;
-            }
-            if (card.y < 0) {
-                card.y = 0;
-            }
-            if (card.y > 650) {
-                card.y = 650;
-            }
+            card.x = mX - dx;
+            card.y = mY - dy;
+            if (card.x < 0)    card.x = 0;
+            if (card.x > 720)  card.x = 720;
+            if (card.y < 0)    card.y = 0;
+            if (card.y > 650)  card.y = 650;
             int y = 20;  // Все остальные карты в переносимой группе карт размещаем со сдвигом вниз на 20 пикселей
             for (int i = chosenCardNum + 1; i < cardStacks[chosenStackNum].size(); i++) {
                 cardStacks[chosenStackNum].get(i).x = card.x;
