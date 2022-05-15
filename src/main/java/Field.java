@@ -95,9 +95,9 @@ public class Field extends JPanel {
         gr.drawImage(background,0,0,1000,700,null);
         gr.setColor(Color.WHITE);        // Рисование белых контуров
         for (int i = 0; i < 7; i++) {
-            gr.drawRect(30 + i * 110, 130, 72, 97);
+            gr.drawRect(30 + i * Constants.betweenCardStacks, 130, Constants.cardWidth, Constants.cardHeight);
             if (i != 2) {
-                gr.drawRect(30 + i * 110, 15, 72, 97);
+                gr.drawRect(30 + i * Constants.betweenCardStacks, 15, Constants.cardWidth, Constants.cardHeight);
             }
         }
         newGame.drawStack(gr);     // Метод отрисовки всех стопок карт

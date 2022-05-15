@@ -31,13 +31,13 @@ public class Card {
 
     public void draw(Graphics gr) {                // Метод отображения (рисования карты)
         if (turnedOver) {
-            gr.drawImage(backImg, x , y, 72, 97, null);
+            gr.drawImage(backImg, x , y, Constants.cardWidth, Constants.cardHeight, null);
         } else {
-            gr.drawImage(frontImg, x , y, 72, 97, null);
+            gr.drawImage(frontImg, x , y, Constants.cardWidth, Constants.cardHeight, null);
         }
         if (chosen) {
             gr.setColor(Color.YELLOW);
-            gr.drawRect(x, y, 72, 97);
+            gr.drawRect(x, y, Constants.cardWidth, Constants.cardHeight);
         }
     }
 }

@@ -70,7 +70,7 @@ public class game {
                 int lastCardNum = cardStacks[cardStackNum].size() - 1;
                 Card card = cardStacks[cardStackNum].get(lastCardNum);
                 int chosenNum = -1;  // What does it mean?
-                if ((mY >= card.y) && (mY <= (card.y + 97))) {   // Если выбрана самая верхняя карта
+                if ((mY >= card.y) && (mY <= (card.y + Constants.cardHeight))) {   // Если выбрана самая верхняя карта
                     chosenNum= lastCardNum;
                 }
                 else if (mY < card.y) {   // Если выбрана НЕ самая верхняя карта
@@ -134,7 +134,7 @@ public class game {
             if (cardStacks[num].size() > 0) {
                 int topCardNum = cardStacks[num].size() - 1;   // номер верхней карты
                 Card topCard = cardStacks[num].get(topCardNum);  // верхняя карта
-                if ((mY >= topCard.y) && (mY <= (topCard.y + 97))) {
+                if ((mY >= topCard.y) && (mY <= (topCard.y + Constants.cardHeight))) {
                     for (int i = 2; i <= 5; i++) {  // перебираем 4 дом. стопки
                         int homeStackNum = -1; // рез. поиска подх. дом. стопки
                         if (cardStacks[i].size() == 0) { // если дом. стопка пустая
@@ -159,7 +159,8 @@ public class game {
                             }
                         }
                         if (homeStackNum >= 0) { // Если удалось найти подходящую домашнюю стопку
-                            topCard.x = (110 * (homeStackNum + 1)) +30;  // Изменяем координаты на домашнюю стопку
+                            topCard.x = (Constants.betweenCardStacks * (homeStackNum + 1))
+                                    + 30;  // Изменяем координаты на домашнюю стопку
                             topCard.y = 15;
                             cardStacks[homeStackNum].add(topCard); // Добавляем в домашнюю стопку
                             cardStacks[num].remove(topCardNum); // Удалаяем из старой стопки
@@ -205,7 +206,7 @@ public class game {
                 }
 
                 if (isPossible) {   // Если результат проверки положительный
-                    transferringCard.x = (110 * (toStackNum + 1)) + 30;  // Переносим карту в домашнюю стопку
+                    transferringCard.x = (Constants.betweenCardStacks * (toStackNum + 1)) + 30;  // Переносим карту в домашнюю стопку
                     transferringCard.y = 15;
                     cardStacks[toStackNum].add(transferringCard);
                     cardStacks[fromStackNum].remove(chosenCardNum);
@@ -214,7 +215,7 @@ public class game {
             }
         }
         if ((toStackNum >= 6) && (toStackNum <= 12)) {    // Если перенос в нижние стопки
-            int x = 30 + (toStackNum - 6) * 110;
+            int x = 30 + (toStackNum - 6) * Constants.betweenCardStacks;
             int y = 130;
             if (toStackTopCard == null) {  // Если нижняя стопка была пустая
                 if (transferringCard.cardType == 11) {   // Если переносится КОРОЛЬ
@@ -277,18 +278,18 @@ public class game {
 
     private int getPressedStackNum(int mX, int mY) {    // Определение стопки на которую нажали мышью
         int num = -1;  // Если стопка не выбрана
-        if ((mY >= 15) && (mY <= (15 + 97))) {  // Если курсор находится в зоне верхних стопок
-            if ((mX >= 30) && (mX <= (30 + 72))) num = 0;
-            if ((mX >= 140) && (mX <= (140 + 72))) num = 1;
-            if ((mX >= 360) && (mX <= (360 + 72))) num = 2;
-            if ((mX >= 470) && (mX <= (470 + 72))) num = 3;
-            if ((mX >= 580) && (mX <= (580 + 72))) num = 4;
-            if ((mX >= 690) && (mX <= (690 + 72))) num = 5;
+        if ((mY >= 15) && (mY <= (15 + Constants.cardHeight))) {  // Если курсор находится в зоне верхних стопок
+            if ((mX >= 30) && (mX <= (30 + Constants.cardWidth))) num = 0;
+            if ((mX >= 140) && (mX <= (140 + Constants.cardWidth))) num = 1;
+            if ((mX >= 360) && (mX <= (360 + Constants.cardWidth))) num = 2;
+            if ((mX >= 470) && (mX <= (470 + Constants.cardWidth))) num = 3;
+            if ((mX >= 580) && (mX <= (580 + Constants.cardWidth))) num = 4;
+            if ((mX >= 690) && (mX <= (690 + Constants.cardWidth))) num = 5;
         }
         else if ((mY>=130) && (mY<=(700))) {   // Если курсор находится в зоне нижних стопок
-            if ((mX >= 30) && (mX <= 110 * 7)) {
-                if (((mX - 30) % 110) <= 72) {
-                    num = (mX - 30) / 110;
+            if ((mX >= 30) && (mX <= Constants.betweenCardStacks * 7)) {
+                if (((mX - 30) % Constants.betweenCardStacks) <= Constants.cardWidth) {
+                    num = (mX - 30) / Constants.betweenCardStacks;
                     num += 6;
                 }
             }
@@ -306,7 +307,7 @@ public class game {
             }
             Card card = cardStacks[0].get(num);   // Получаем карту из стопки с номером 0
             card.turnedOver = false;             // Делаем отображение картинкой
-            card.x += 110;                       //сдвигаем в стопку правее
+            card.x += Constants.betweenCardStacks;                       //сдвигаем в стопку правее
             cardStacks[1].add(card);
             cardStacks[0].remove(num);
         } else {        // Если карт уже нет
@@ -314,7 +315,7 @@ public class game {
             for (int i = lastCardNum; i >= 0; i--) {  // перенос карт из стопки 1 в колоду
                 Card card = cardStacks[1].get(i);
                 card.turnedOver = true;
-                card.x -= 110; // сдвигаем левее
+                card.x -= Constants.betweenCardStacks; // сдвигаем левее
                 cardStacks[0].add(card);
             }
             cardStacks[1].clear();
@@ -346,7 +347,7 @@ public class game {
                 cardStacks[i].add(card);  // Добавляем карту в нижнюю стопку
                 cardStacks[0].remove(rnd); // Удаляем карту из верхней левой стопки
             }
-            x += 110; //смещаемся правее
+            x += Constants.betweenCardStacks; //смещаемся правее
         }
     }
 
