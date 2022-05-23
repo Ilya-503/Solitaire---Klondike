@@ -8,11 +8,11 @@ public class game {
     private final String path = "src\\main\\resources\\images\\";
     private final CardStack[] cardStacks;
     private boolean firstDeckDistribution;     // Признак первой выдачи карт из верхней левой стопки
-    private int chosenStackNum;             // Номер стопки захваченной пользователем
-    private int chosenCardNum;              // Номер карты в стопке захваченной пользователем
-    private int dx, dy;                    // Смещения координат курсора мыши относительно координат карты
-    private int oldX ,oldY;               // Координаты карты до начала переноса мышью
-    private final Timer tmEndGame;               // Таймер для эффекта окончания игры
+    private int chosenStackNum;               // Номер стопки захваченной пользователем
+    private int chosenCardNum;                // Номер карты в стопке захваченной пользователем
+    private int dx, dy;                       // Смещения координат курсора мыши относительно координат карты
+    private int oldX ,oldY;                   // Координаты карты до начала переноса мышью
+    private final Timer tmEndGame;            // Таймер для эффекта окончания игры
     public boolean endGame;
     public Image backImg;
 
@@ -38,6 +38,45 @@ public class game {
         });
         start();
     }
+
+    // region Старт игры
+    public void start() {     // Старт игры - Новая игра
+        for (int i = 0; i < 13; i++) {
+            cardStacks[i].clear();
+        }
+        loadDeck();
+        distribution();
+        endGame = false;
+        firstDeckDistribution = true;
+        chosenCardNum = -1;
+        chosenStackNum = -1;
+    }
+
+    private void distribution() {     // Раздача карт в нижние семь стопок
+        int x = 30;
+        for (int i = 6; i < 13; i++) {  // Перебираем все стопки нижние семь стопок
+            for (int j = 6; j <= i; j++) {  // Добавление карт в стопку
+                int rnd = (int)(Math.random() * cardStacks[0].size()); // номер случайной карты из верхней левой стопки
+                Card card = cardStacks[0].get(rnd);
+                card.turnedOver = j < i;  // Если карта не самая верхняя,то показываем ее рубашкой
+                card.x = x;
+                card.y = 130 + cardStacks[i].size() * 20;  // Каждую следующую карту располагаем ниже на 20 пикселей
+                cardStacks[i].add(card);  // Добавляем карту в нижнюю стопку
+                cardStacks[0].remove(rnd); // Удаляем карту из верхней левой стопки
+            }
+            x += Constants.betweenCardStacks; //смещаемся правее
+        }
+    }
+
+    private void loadDeck() {     // Загрузка изображений колоды
+        for (int i = 1; i <= 52; i++) {
+            cardStacks[0].add(new Card(path + "k" + (i) + ".png", backImg, i));
+        }
+    }
+
+    // endregion
+
+    // region Работа с картами
 
     private void openTopCard() {    // Автоматическое открытие верхней карт в нижних стопках
         for (int i = 6; i <= 12; i++) {     // Перебираем все нижние стопки карт
@@ -69,7 +108,7 @@ public class game {
             if (cardStacks[cardStackNum].size() > 0) {
                 int lastCardNum = cardStacks[cardStackNum].size() - 1;
                 Card card = cardStacks[cardStackNum].get(lastCardNum);
-                int chosenNum = -1;  // What does it mean?
+                int chosenNum = -1;
                 if ((mY >= card.y) && (mY <= (card.y + Constants.cardHeight))) {   // Если выбрана самая верхняя карта
                     chosenNum= lastCardNum;
                 }
@@ -95,15 +134,89 @@ public class game {
         }
     }
 
-    private void checkEndGame() {
-        if ((cardStacks[2].size() == 13) &&                 // во всех домашних стопках есть карты
-                (cardStacks[3].size() == 13) &&
-                (cardStacks[4].size() == 13) &&
-                (cardStacks[5].size() == 13)) {
-            endGame = true;
-            tmEndGame.start();
+    /**
+     * Проверка возможности переноса и перенос,
+     * если возможно это сделать
+     * @param fromStackNum стопка ИЗ которой перенос
+     * @param toStackNum стопка В которую перенос
+     **/
+    private boolean checkCardTransfer(int fromStackNum, int toStackNum) {
+        boolean isPossible = false;
+        Card transferringCard = cardStacks[fromStackNum].get(chosenCardNum); // Карта, которая переносится
+        Card toStackTopCard = null;
+        if (toStackNum != -1 && cardStacks[toStackNum].size() > 0) {  // Если есть карты в стопке
+            toStackTopCard = cardStacks[toStackNum].get(cardStacks[toStackNum].size() - 1); // Получаем верхнюю карту
         }
+        if ((toStackNum >= 2) && (toStackNum <= 5)) {  // Если четыре домашние стопки
+            if (chosenCardNum ==  (cardStacks[fromStackNum].size() - 1)) {
+                if (toStackTopCard == null) {      // Если стопка была пустая
+                    if (transferringCard.cardType == 12) {  // Если переносимая карта ТУЗ
+                        isPossible = true;
+                    }
+                }
+                else if ((toStackTopCard.cardType == 12) &&                // Если в домашней стопке ТУЗ, переносится
+                        (transferringCard.suit == toStackTopCard.suit) && // ДВОЙКА и масти совпадают
+                        (transferringCard.cardType == 0)) {
+                    isPossible = true;
+                }
+                else if ((toStackTopCard.cardType >= 0) && // Если в домашней стопке не ТУЗ, но масти совпадают
+                        (toStackTopCard.cardType < 11) &&
+                        (transferringCard.suit == toStackTopCard.suit)) {
+                    if ((toStackTopCard.cardType + 1 == transferringCard.cardType)) { // Если перенос. к. выше на 1
+                        isPossible = true;
+                    }
+                }
+
+                if (isPossible) {   // Если результат проверки положительный
+                    transferringCard.x = (Constants.betweenCardStacks * (toStackNum + 1)) + 30;  // Переносим карту в домашнюю стопку
+                    transferringCard.y = 15;
+                    cardStacks[toStackNum].add(transferringCard);
+                    cardStacks[fromStackNum].remove(chosenCardNum);
+                    checkEndGame();
+                }
+            }
+        }
+        if ((toStackNum >= 6) && (toStackNum <= 12)) {    // Если перенос в нижние стопки
+            int x = 30 + (toStackNum - 6) * Constants.betweenCardStacks;
+            int y = 130;
+            if (toStackTopCard == null) {  // Если нижняя стопка была пустая
+                if (transferringCard.cardType == 11) {   // Если переносится КОРОЛЬ
+                    isPossible = true;
+                }
+            }
+            else {   // Если была НЕ пустая
+                if (!toStackTopCard.turnedOver) {     // Если верхняя карта открыта
+                    if (toStackTopCard.cardType != 12) {  // Если переносим НЕ на ТУЗА
+                        if ((toStackTopCard.cardType == transferringCard.cardType + 1) ||   // Если переносимая карта
+                                ((toStackTopCard.cardType == 0) &&                        // на один младше или
+                                        (transferringCard.cardType == 12))) {          // ТУЗ переносится на двойку
+                            if (toStackTopCard.redSuit != transferringCard.redSuit) {  // Если одна масть ЧЕРНАЯ, а другая КРАСНАЯ
+                                y = toStackTopCard.y + 20;
+                                isPossible = true;
+                            }
+                        }
+                    }
+                }
+            }
+            if (isPossible) {
+                for (int i = chosenCardNum; i < cardStacks[fromStackNum].size(); i++) {
+                    Card card_ = cardStacks[fromStackNum].get(i); // Добавляем все карты в новую стопу
+                    card_.x = x;
+                    card_.y = y;
+                    cardStacks[toStackNum].add(card_);
+                    y += 20;
+                }
+                for (int i = cardStacks[fromStackNum].size() - 1; i >= chosenCardNum; i--) {
+                    cardStacks[fromStackNum].remove(i);   // Удалаяем все карты из старой стопки
+                }
+            }
+        }
+        return isPossible;
     }
+
+    // endregion
+
+    // region Обработка действий с мышью
 
     public void mouseDragged(int mX, int mY) {   // При захвате карты мышью
         if (chosenStackNum >= 0) {
@@ -125,10 +238,10 @@ public class game {
 
     public void mousePressed(int mX, int mY) {   // При одиночном нажатии левой кнопки мыши
         int num = getPressedStackNum(mX, mY); // Определяем номер стопки
-        setChosenCard(num, mX, mY); // Устанавливаем выбранную карту
+        setChosenCard(num, mX, mY);  // Устанавливаем выбранную карту
     }
 
-    public void mouseDoublePressed(int mX, int mY) {
+   /* public void mouseDoublePressed(int mX, int mY) {
         int num = getPressedStackNum(mX, mY);
         if ((num == 1) || ((num >= 6) && (num <= 12))) {    // Если это нижняя стопка или с номером 1
             if (cardStacks[num].size() > 0) {
@@ -172,85 +285,7 @@ public class game {
             }
         }
         openTopCard();
-    }
-
-    // Проверка возможности переноса и перенос,
-    // если возможно это сделать
-    // fromStackNum - стопка ИЗ которой перенос
-    // toStackNum - стопка В которую перенос
-    private boolean checkCardTransfer(int fromStackNum, int toStackNum) {
-        boolean isPossible = false;  // Результат проверки
-        Card transferringCard = cardStacks[fromStackNum].get(chosenCardNum); // Карта, которая переносится
-        Card toStackTopCard = null;
-        if (cardStacks[toStackNum].size() > 0) {  // Если есть карты в стопке
-            toStackTopCard = cardStacks[toStackNum].get(cardStacks[toStackNum].size() - 1); // Получаем верхнюю карту
-        }
-        if ((toStackNum >= 2) && (toStackNum <= 5)) {  // Если четыре домашние стопки
-            if (chosenCardNum ==  (cardStacks[fromStackNum].size() - 1)) {
-                if (toStackTopCard == null) {      // Если стопка была пустая
-                    if (transferringCard.cardType == 12) {  // Если переносимая карта ТУЗ
-                        isPossible = true;
-                    }
-                }
-                else if ((toStackTopCard.cardType == 12) &&                // Если в домашней стопке ТУЗ, переносится
-                        (transferringCard.suit == toStackTopCard.suit) && // ДВОЙКА и масти совпадают
-                        (transferringCard.cardType == 0)) {
-                    isPossible = true;
-                }
-                else if ((toStackTopCard.cardType >= 0) && // Если в домашней стопке не ТУЗ, но масти совпадают
-                        (toStackTopCard.cardType < 11) &&
-                        (transferringCard.suit == toStackTopCard.suit)) {
-                    if ((toStackTopCard.cardType + 1 == transferringCard.cardType)) { // Если перенос. к. выше на 1
-                        isPossible = true;
-                    }
-                }
-
-                if (isPossible) {   // Если результат проверки положительный
-                    transferringCard.x = (Constants.betweenCardStacks * (toStackNum + 1)) + 30;  // Переносим карту в домашнюю стопку
-                    transferringCard.y = 15;
-                    cardStacks[toStackNum].add(transferringCard);
-                    cardStacks[fromStackNum].remove(chosenCardNum);
-                    checkEndGame();
-                }
-            }
-        }
-        if ((toStackNum >= 6) && (toStackNum <= 12)) {    // Если перенос в нижние стопки
-            int x = 30 + (toStackNum - 6) * Constants.betweenCardStacks;
-            int y = 130;
-            if (toStackTopCard == null) {  // Если нижняя стопка была пустая
-                if (transferringCard.cardType == 11) {   // Если переносится КОРОЛЬ
-                    isPossible = true;
-                }
-            }
-            else {   // Если была НЕ пустая
-                if (!toStackTopCard.turnedOver) {     // Если верхняя карта открыта
-                    if (toStackTopCard.cardType != 12) {  // Если переносим НЕ на ТУЗА
-                        if ((toStackTopCard.cardType == transferringCard.cardType + 1) ||   // Если переносимая карта на один младше или
-                                ((toStackTopCard.cardType == 0) &&
-                                        (transferringCard.cardType == 12))) { // // ТУЗ переносится на двойку
-                            if (toStackTopCard.redSuit != transferringCard.redSuit) {  // Если одна масть ЧЕРНАЯ, а другая КРАСНАЯ
-                                y = toStackTopCard.y + 20;
-                                isPossible = true;
-                            }
-                        }
-                    }
-                }
-            }
-            if (isPossible) {
-                for (int i = chosenCardNum; i < cardStacks[fromStackNum].size(); i++) {
-                    Card card_ = cardStacks[fromStackNum].get(i); // Добавляем все карты в новую стопу
-                    card_.x = x;
-                    card_.y = y;
-                    cardStacks[toStackNum].add(card_);
-                    y += 20;
-                }
-                for (int i = cardStacks[fromStackNum].size() - 1; i >= chosenCardNum; i--) {
-                    cardStacks[fromStackNum].remove(i);   // Удалаяем все карты из старой стопки
-                }
-            }
-        }
-        return isPossible;
-    }
+    } */
 
     public void mouseReleased(int mX, int mY) {  // При отпускании левой кнопки мыши
         int num = getPressedStackNum(mX, mY);  // Определяем номер стопки
@@ -276,6 +311,18 @@ public class game {
         }
     }
 
+    // endregion
+
+    private void checkEndGame() {
+        if ((cardStacks[2].size() == 13) &&       // во всех домашних стопках есть карты
+                (cardStacks[3].size() == 13) &&
+                (cardStacks[4].size() == 13) &&
+                (cardStacks[5].size() == 13)) {
+            endGame = true;
+            tmEndGame.start();
+        }
+    }
+
     private int getPressedStackNum(int mX, int mY) {    // Определение стопки на которую нажали мышью
         int num = -1;  // Если стопка не выбрана
         if ((mY >= 15) && (mY <= (15 + Constants.cardHeight))) {  // Если курсор находится в зоне верхних стопок
@@ -286,7 +333,7 @@ public class game {
             if ((mX >= 580) && (mX <= (580 + Constants.cardWidth))) num = 4;
             if ((mX >= 690) && (mX <= (690 + Constants.cardWidth))) num = 5;
         }
-        else if ((mY>=130) && (mY<=(700))) {   // Если курсор находится в зоне нижних стопок
+        else if ((mY >= 130) && (mY <= 700)) {   // Если курсор находится в зоне нижних стопок
             if ((mX >= 30) && (mX <= Constants.betweenCardStacks * 7)) {
                 if (((mX - 30) % Constants.betweenCardStacks) <= Constants.cardWidth) {
                     num = (mX - 30) / Constants.betweenCardStacks;
@@ -323,45 +370,10 @@ public class game {
         }
     }
 
-    public void start() {     // Старт игры - Новая игра
-        for (int i = 0; i < 13; i++) {
-            cardStacks[i].clear();
-        }
-        loadDeck();
-        distribution();
-        endGame = false;
-        firstDeckDistribution = true;
-        chosenCardNum = -1;
-        chosenStackNum = -1;
-    }
-
-    private void distribution() {     // Раздача карт в нижние семь стопок
-        int x = 30;
-        for (int i = 6; i < 13; i++) {  // Перебираем все стопки нижние семь стопок
-            for (int j = 6; j <= i; j++) {  // Добавление карт в стопку
-                int rnd = (int)(Math.random() * cardStacks[0].size()); // номер случайной карты из верхней левой стопки
-                Card card = cardStacks[0].get(rnd);
-                card.turnedOver = j < i;  // Если карта не самая верхняя,то показываем ее рубашкой
-                card.x = x;
-                card.y = 130 + cardStacks[i].size() * 20;  // Каждую следующую карту располагаем ниже на 20 пикселей
-                cardStacks[i].add(card);  // Добавляем карту в нижнюю стопку
-                cardStacks[0].remove(rnd); // Удаляем карту из верхней левой стопки
-            }
-            x += Constants.betweenCardStacks; //смещаемся правее
-        }
-    }
-
-    private void loadDeck() {     // Загрузка изображений колоды
-        for (int i = 1; i <= 52; i++) {
-            cardStacks[0].add(new Card(path + "k" + (i) + ".png", backImg, i));
-        }
-    }
-
     public void drawStack(Graphics gr) {  // Метод отрисовки всех стопок карт
         if (cardStacks[0].size() > 0) {    // ВЕРХНЯЯ ЛЕВАЯ СТОПКА - если в стопке есть карты
             cardStacks[0].get(cardStacks[0].size() - 1).draw(gr); // Получаем и рисуем самую верхнюю карту
         }
-
         if (cardStacks[1].size() > 1) {   // ВТОРАЯ СЛЕВА ВЕРХНЯЯ СТОПКА - если в стопке более одной карты
             cardStacks[1].get(cardStacks[1].size() - 2).draw(gr);   // Получаем и рисуем вторую сверху карту
             cardStacks[1].get(cardStacks[1].size() - 1).draw(gr);  // Получаем и рисуем самую верхнюю карту
@@ -374,7 +386,7 @@ public class game {
                 cardStacks[i].get(cardStacks[i].size() - 2).draw(gr);  // Получаем и рисуем вторую сверху карту
                 cardStacks[i].get(cardStacks[i].size() - 1).draw(gr); // Получаем и рисуем самую верхнюю карту
             }
-            else if (cardStacks[i].size()==1) // если в стопке одна карта
+            else if (cardStacks[i].size() == 1) // если в стопке одна карта
             {
                 cardStacks[i].get(cardStacks[i].size() - 1).draw(gr); // Получаем и рисуем самую верхнюю карту
             }

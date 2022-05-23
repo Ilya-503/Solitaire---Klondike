@@ -10,10 +10,9 @@ public class Field extends JPanel {
     private final game newGame;      // Переменная для реализации игры
     private Image background;
 
-    public class myMouse1 implements MouseListener {
+    public class myMouse1 extends MouseAdapter {    // MA - пустая реализация (I) MouseListener
 
-        public void mouseClicked(MouseEvent e) {}
-
+        @Override
         public void mousePressed(MouseEvent e) {
             if (!newGame.endGame) {
                 int mX = e.getX();
@@ -21,13 +20,14 @@ public class Field extends JPanel {
                 if (e.getButton() == 1) {
                     if (e.getClickCount() == 1) {
                         newGame.mousePressed(mX, mY);
-                    } else if (e.getClickCount() == 2) {
+                    } /*else if (e.getClickCount() == 2) {
                         newGame.mouseDoublePressed(mX, mY);
-                    }
+                    }*/
                 }
             }
         }
 
+        @Override
         public void mouseReleased(MouseEvent e) {  // При отпускании кнопки мыши
             if (!newGame.endGame) {
                 int mX = e.getX();
@@ -37,23 +37,18 @@ public class Field extends JPanel {
                 }
             }
         }
-
-        public void mouseEntered(MouseEvent e) { }
-
-        public void mouseExited(MouseEvent e) { }
     }
 
-    public class myMouse2 implements MouseMotionListener {
+    public class myMouse2 extends MouseMotionAdapter {
 
-        public void mouseDragged(MouseEvent e) {   // При перетаскивании (захвате мышью)
+        @Override
+        public void mouseDragged(MouseEvent e) {
             if (!newGame.endGame) {
                 int mX = e.getX();
                 int mY = e.getY();
                 newGame.mouseDragged(mX, mY);
             }
         }
-
-        public void mouseMoved(MouseEvent e) {}
     }
 
     public Field() {
@@ -90,7 +85,7 @@ public class Field extends JPanel {
         this.add(btn);
     }
 
-    public void paintComponent(Graphics gr) {    // Метод отрисовки игрового поля
+    public void paintComponent(Graphics gr) {    // Метод отрисовки элементов игрового поля
         super.paintComponent(gr);   // Очищение игрового поля
         gr.drawImage(background,0,0,1000,700,null);
         gr.setColor(Color.WHITE);        // Рисование белых контуров

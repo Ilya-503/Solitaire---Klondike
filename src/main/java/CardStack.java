@@ -1,11 +1,12 @@
 import java.util.ArrayList;
+import java.util.List;
 
 public class CardStack {
 
-    private ArrayList<Card> cardList;
+    private List<Card> cardList;
 
     public CardStack() {
-        cardList = new ArrayList<Card>();
+        cardList = new ArrayList<>();
     }
 
     public Card get(int num) {

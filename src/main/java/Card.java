@@ -24,12 +24,12 @@ public class Card {
         x = 30;
         y = 15;
         turnedOver = true;
-        suit = (num - 1) % 4;
+        suit = (num - 1) % 4;   // крести - пики - черви - бубны
         cardType = (num - 1) / 4;
-        redSuit = suit <= 1 ? false : true;
+        redSuit = suit <= 1 ? false : true;    // 1,2 - черные, 3,4 - красные, 5,6 - черные ...
     }
 
-    public void draw(Graphics gr) {                // Метод отображения (рисования карты)
+    public void draw(Graphics gr) {        // Метод отображения (рисования карты)
         if (turnedOver) {
             gr.drawImage(backImg, x , y, Constants.cardWidth, Constants.cardHeight, null);
         } else {
