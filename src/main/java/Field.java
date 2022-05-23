@@ -20,9 +20,9 @@ public class Field extends JPanel {
                 if (e.getButton() == 1) {
                     if (e.getClickCount() == 1) {
                         newGame.mousePressed(mX, mY);
-                    } /*else if (e.getClickCount() == 2) {
+                    } else if (e.getClickCount() == 2) {
                         newGame.mouseDoublePressed(mX, mY);
-                    }*/
+                    }
                 }
             }
         }

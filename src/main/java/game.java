@@ -12,7 +12,7 @@ public class game {
     private int chosenCardNum;                // Номер карты в стопке захваченной пользователем
     private int dx, dy;                       // Смещения координат курсора мыши относительно координат карты
     private int oldX ,oldY;                   // Координаты карты до начала переноса мышью
-    private final Timer tmEndGame;            // Таймер для эффекта окончания игры
+    private final Timer tmEndGame;            // Таймер для эффекта при окончании игры
     public boolean endGame;
     public Image backImg;
 
@@ -29,7 +29,7 @@ public class game {
             cardStacks[i] = new CardStack();
         }
 
-        tmEndGame = new Timer(100, arg0 -> {  // будет запускаться при успешном завершении игры, скорость работы - 10 раз в секунду.
+        tmEndGame = new Timer(100, arg0 -> {
             for (int i = 2; i <= 5; i++) {   // Перебираем четыре домашние стопки
                 Card card = cardStacks[i].get(0);  // Получаем самую нижнюю карту
                 cardStacks[i].add(card); // Нижнюю карту добавляем наверх
@@ -241,7 +241,7 @@ public class game {
         setChosenCard(num, mX, mY);  // Устанавливаем выбранную карту
     }
 
-   /* public void mouseDoublePressed(int mX, int mY) {
+    public void mouseDoublePressed(int mX, int mY) {    // автоматический перенос карты в дом. стопку
         int num = getPressedStackNum(mX, mY);
         if ((num == 1) || ((num >= 6) && (num <= 12))) {    // Если это нижняя стопка или с номером 1
             if (cardStacks[num].size() > 0) {
@@ -285,7 +285,7 @@ public class game {
             }
         }
         openTopCard();
-    } */
+    }
 
     public void mouseReleased(int mX, int mY) {  // При отпускании левой кнопки мыши
         int num = getPressedStackNum(mX, mY);  // Определяем номер стопки
