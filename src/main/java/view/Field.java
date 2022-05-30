@@ -44,7 +44,7 @@ public class Field extends JPanel {
         if (exitBtn) {
             btn.addActionListener(arg0 -> System.exit(0));
         } else {
-            btn.addActionListener(arg0 -> mouseListeners.restartGame());
+            btn.addActionListener(arg0 -> gameInterface.restartGame());
         }
         this.add(btn);
     }

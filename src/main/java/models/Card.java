@@ -10,10 +10,10 @@ public class Card {
 
     private Image frontImg;
     private int x, y;
-    private int suit;
-    private int cardType;
+    private final int suit;
+    private final int cardType;
     private boolean chosen;
-    private boolean redSuit;
+    private final boolean redSuit;
     private boolean turnedOver;
 
 
@@ -28,7 +28,7 @@ public class Card {
         turnedOver = true;
         suit = (num - 1) % 4;   // крести - пики - черви - бубны
         cardType = (num - 1) / 4;
-        redSuit = suit <= 1 ? false : true;    // 1,2 - черные, 3,4 - красные, 5,6 - черные ...
+        redSuit = suit > 1;    // 1,2 - черные, 3,4 - красные, 5,6 - черные ...
     }
 
     public static Image getBackImg() {
@@ -46,15 +46,6 @@ public class Card {
 
     public Image getFrontImg() {
         return frontImg;
-    }
-
-    public void setFrontImg(String path) {
-        try {
-            frontImg = ImageIO.read(new File(path + "k0.png"));
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-        }
     }
 
     public int getType() {

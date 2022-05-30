@@ -1,5 +1,7 @@
 package models;
 
+import view.GameInterface;
+
 import java.util.ArrayList;
 
 public class Game {
@@ -211,7 +213,6 @@ public class Game {
     }
 
     //endregion
-
 
 }
 

@@ -10,22 +10,31 @@ import java.util.ArrayList;
 
 public class GameInterface {
 
-    private Timer tmEndGame;
-    private Game game;
-
+    private final Timer tmEndGame;
+    private final Game game;
+    private boolean gameEnded;
 
     public GameInterface(Game game) {
         this.game = game;
         game.start();
 
+
         tmEndGame = new Timer(100, arg0 -> {
+            gameEnded = game.isEndGame();
+            if (gameEnded) {
             for (int i = 2; i <= 5; i++) {
                 ArrayList<Card> cardStack = game.getCardStack(i);
                 Card card = cardStack.get(0);
                 cardStack.add(card);
                 cardStack.remove(0);
             }
+            }
         });
+        tmEndGame.start();
+    }
+
+    public void restartGame() {
+        game.start();
     }
 
     public void drawStack(Graphics gr) {
@@ -40,7 +49,7 @@ public class GameInterface {
             drawCard(secondCardStack.get(secondCSSize - 2), gr);   // Получаем и рисуем вторую сверху карту
             drawCard(secondCardStack.get(secondCSSize - 1), gr);            // Получаем и рисуем самую верхнюю карту
         } else if (secondCSSize == 1) {        // если в стопке одна карта
-            drawCard(secondCardStack.get(secondCSSize - 1), gr);         // Получаем и рисуем самую верхнюю карту
+            drawCard(secondCardStack.get(0), gr);         // Получаем и рисуем самую верхнюю карту
         }
 
         for (int i = 2; i <= 5; i++) {  // ЧЕТЫРЕ ДОМАШНИЕ СТОПКИ
@@ -50,18 +59,18 @@ public class GameInterface {
                 drawCard(cardStack.get(size - 2), gr); // Получаем и рисуем вторую сверху карту
                 drawCard(cardStack.get(size - 1), gr); // Получаем и рисуем самую верхнюю карту
             } else if (size == 1) {        // если в стопке одна карта
-                drawCard(cardStack.get(size - 1), gr);// Получаем и рисуем самую верхнюю карту
+                drawCard(cardStack.get(0), gr);// Получаем и рисуем самую верхнюю карту
             }
         }
 
         for (int i = 6; i < 13; i++) {  // НИЖНИЕ СЕМЬ СТОПОК
             ArrayList<Card> cardStack = game.getCardStack(i);
-            int size = cardStack.size();
-            if (size > 0) {  // Если в стопке есть карты
-                for (int j = 0; j < size; j++) {  // Перебираем все карты из стопки
-                    if (cardStack.get(j).isChosen()) // находим выбранную карту - прерываем цикл
+            if (cardStack != null) {  // Если в стопке есть карты
+                for (Card card: cardStack) {  // Перебираем все карты из стопки
+                    if (card.isChosen()) { // находим выбранную карту - прерываем цикл
                         break;
-                    drawCard(cardStack.get(j), gr); // Рисуем карты
+                    }
+                    drawCard(card, gr); // Рисуем карты
                 }
             }
         }

@@ -8,16 +8,12 @@ import java.awt.event.*;
 import java.util.ArrayList;
 
 public class MouseListeners {
-    private Game game;
+    private final Game game;
     private int dx, dy;           // Смещения координат курсора мыши относительно координат карты
     private int oldX ,oldY;       // Координаты карты до начала переноса мышью
 
     public MouseListeners(Game game) {
         this.game = game;
-    }
-
-    public void restartGame() {
-        game.start();
     }
 
     public MouseListener getMouseListener() {
