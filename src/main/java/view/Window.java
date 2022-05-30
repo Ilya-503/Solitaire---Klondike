@@ -1,10 +1,16 @@
+package view;
+
+import controllers.MouseListeners;
+import models.Game;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class Window extends JFrame {
 
     public Window() {
-        Field panel = new Field();
+        Game game = new Game();
+        Field panel = new Field(new MouseListeners(game), new GameInterface(game));
         Container container = getContentPane();
         container.add(panel);
         setTitle("Игра \"Пасьянс-Косынка\"");
