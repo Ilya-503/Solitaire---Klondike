@@ -71,7 +71,7 @@ public class MouseListener {
 
         private void setChosenCard(int cardStackNum, int mX, int mY) {     // Установка выбранной карты
             if ((cardStackNum >= 1) && (cardStackNum <= 5)) {  // Если верхние стопки (1,2,3,4,5)
-                Stack<Card> cardStack = game.getCardStack(cardStackNum);
+                ArrayList<Card> cardStack = game.getCardStack(cardStackNum);
                 if (cardStack.size() > 0) {
                     int lastCardNum = cardStack.size() - 1;  // Получаем номер верхней карты
                     Card card = cardStack.get(lastCardNum);  // Получаем верхнюю карту
@@ -130,7 +130,7 @@ public class MouseListener {
                             }
                             else {      // елси домшняя стопка уже не пустая
                                 int topCardHomeNum = game.getCardStack(i).size() - 1; // ном. карты в дом. стопке
-                                Card topCardHome = game.getCardStack(i).get(topCardHomeNum); // ERROR - когда в домашних стопках нет ничего
+                                Card topCardHome = game.getCardStack(i).get(topCardHomeNum);
                                 if ((topCardHome.getType() == 12) &&                  // Если эта карта
                                         (topCard.getSuit() == topCardHome.getSuit()) &&     // в домашней стопке - туз,
                                         (topCard.getType() == 0)) {               // а переносим двойку и их масти совпадают
@@ -177,7 +177,7 @@ public class MouseListener {
             int chosenCardNum = game.getChosenCardNum();
 
             if (chosenStackNum != -1) {       // Если какая-то стопка выбрана в режиме переноса
-                Stack<Card> cardStack = game.getCardStack(chosenStackNum);
+                ArrayList<Card> cardStack = game.getCardStack(chosenStackNum);
                 cardStack.get(chosenCardNum).setChosen(false);     // Убираем признак у выбранной карты
                 boolean isPossible = game.checkCardTransfer(chosenStackNum, num);
                 if ((num == -1) || (!isPossible)) {   // Если после переноса стопка не выбрана | перенос оказался ошибочным
@@ -216,7 +216,7 @@ public class MouseListener {
             int chosenCardNum = game.getChosenCardNum();
 
             if (chosenStackNum >= 0) {
-                Stack<Card> cardStack = game.getCardStack(chosenStackNum);
+                ArrayList<Card> cardStack = game.getCardStack(chosenStackNum);
                 Card card = cardStack.get(chosenCardNum);
                 card.setX(mX - dx);
                 card.setY(mY - dy);

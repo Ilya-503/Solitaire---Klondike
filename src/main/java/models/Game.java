@@ -1,19 +1,19 @@
 package models;
 
-import java.util.Stack;
+import java.util.ArrayList;
 
 public class Game {
 
-    private final Stack<Card>[] cardStacks;
+    private final ArrayList<Card>[] cardStacks;
     private boolean firstDeckDistribution;
     private int chosenStackNum;
     private int chosenCardNum;
     private boolean endGame;
 
     public Game() {
-        cardStacks = new Stack[13];
+        cardStacks = new ArrayList[13];
         for (int i = 0; i < 13; i++) {
-            cardStacks[i] = new Stack<>();
+            cardStacks[i] = new ArrayList<>();
         }
         start();
     }
@@ -32,7 +32,7 @@ public class Game {
 
     private void loadDeck() {
         for (int i = 1; i <= 52; i++) {
-            cardStacks[0].push(new Card(Constants.path + "k" + (i) + ".png", i));
+            cardStacks[0].add(new Card(Constants.path + "k" + (i) + ".png", i));
         }
             Card.setBackImg(Constants.path);
     }
@@ -46,7 +46,7 @@ public class Game {
                 card.setTurnedOver(j < i);
                 card.setX(x);
                 card.setY(130 + cardStacks[i].size() * 20); // Каждую следующую карту располагаем ниже на 20 пикселей
-                cardStacks[i].push(card);
+                cardStacks[i].add(card);
                 cardStacks[0].remove(rnd);
             }
             x += Constants.betweenCardStacks;
@@ -141,27 +141,28 @@ public class Game {
 
     public void getCardFromDeck() {
         int num;
-        Card card;
         if (cardStacks[0].size() > 0) {
-            if (firstDeckDistribution) {
-                num = (int)(Math.random() * cardStacks[0].size());
-                card = cardStacks[0].get(num);
-            } else {
-                card = cardStacks[0].pop();
-            }
+            num = firstDeckDistribution ?
+                    (int)(Math.random() * cardStacks[0].size()) :
+                    cardStacks[0].size() - 1;
+            Card card = cardStacks[0].get(num);
             card.setTurnedOver(false);
             card.setX(card.getX() + Constants.betweenCardStacks);
-            cardStacks[1].push(card);
+            cardStacks[1].add(card);
+            cardStacks[0].remove(num);
         } else {
-            for (int i = 0; i < cardStacks[1].size(); i++) {
-                card = cardStacks[1].pop();
+            num = cardStacks[1].size() - 1;
+            for (int i = num; i >= 0; i--) {
+                Card card = cardStacks[1].get(i);
                 card.setTurnedOver(true);
                 card.setX(card.getX() - Constants.betweenCardStacks);
-                cardStacks[0].push(card);
+                cardStacks[0].add(card);
             }
+            cardStacks[1].clear();
             firstDeckDistribution = false;
         }
     }
+
 
     public void checkEndGame() {
         for (int i = 2; i <= 5; i++) {
@@ -171,7 +172,7 @@ public class Game {
 
     //region Геттеры и сеттеры
 
-    public Stack<Card> getCardStack(int i) {
+    public ArrayList<Card> getCardStack(int i) {
         return cardStacks[i];
     }
 

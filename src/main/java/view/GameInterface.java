@@ -23,7 +23,7 @@ public class GameInterface {
             gameEnded = game.isEndGame();
             if (gameEnded) {
             for (int i = 2; i <= 5; i++) {
-                Stack<Card> cardStack = game.getCardStack(i);
+                ArrayList<Card> cardStack = game.getCardStack(i);
                 Card card = cardStack.get(0);
                 cardStack.add(card);
                 cardStack.remove(0);
@@ -46,7 +46,7 @@ public class GameInterface {
     private void drawUpperStacks(Graphics gr) {
         drawDeck(gr);
         for (int i = 1; i < 6; i++) {
-            Stack<Card> stack = game.getCardStack(i);
+            ArrayList<Card> stack = game.getCardStack(i);
             int size = stack.size();
             if (size > 1) {
                 drawCard(stack.get(size - 2), gr);
@@ -58,7 +58,7 @@ public class GameInterface {
     }
 
     private void drawDeck(Graphics gr) {
-        Stack<Card> deck = game.getCardStack(0);
+        ArrayList<Card> deck = game.getCardStack(0);
         int size = deck.size();
         if (size > 0) {
             drawCard(deck.get(size - 1), gr);
@@ -67,7 +67,7 @@ public class GameInterface {
 
     private void drawLowerStacks(Graphics gr) {
         for (int i = 6; i < 13; i++) {
-            Stack<Card> stack = game.getCardStack(i);
+            ArrayList<Card> stack = game.getCardStack(i);
             if (stack != null) {
                 for (Card card: stack) {
                     if (card.isChosen()) {
@@ -82,7 +82,7 @@ public class GameInterface {
     private void drawChosenStack(Graphics gr) {
         int chosenStackNum = game.getChosenStackNum();
         if (chosenStackNum != -1) {
-            Stack<Card> stack = game.getCardStack(chosenStackNum);
+            ArrayList<Card> stack = game.getCardStack(chosenStackNum);
             for (int i = game.getChosenCardNum(); i < stack.size(); i++) {
                 drawCard(stack.get(i), gr);
             }
