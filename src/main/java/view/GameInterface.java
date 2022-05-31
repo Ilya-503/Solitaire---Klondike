@@ -7,7 +7,6 @@ import models.Game;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Stack;
 
 public class GameInterface {
 

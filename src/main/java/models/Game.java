@@ -69,74 +69,63 @@ public class Game {
         int transferCardType = transferringCard.getType();
         int transferCardSuit = transferringCard.getSuit();
         Card toStackTopCard = null;
+        int toCardType = 100, toCardSuit = 100;
+
         if (toStackNum != -1 && cardStacks[toStackNum].size() > 0) {
             toStackTopCard = cardStacks[toStackNum].get(cardStacks[toStackNum].size() - 1);
+            toCardType = toStackTopCard.getType();
+            toCardSuit = toStackTopCard.getSuit();
         }
-        if ((toStackNum >= 2) && (toStackNum <= 5)) {  // Если четыре домашние стопки
-            if (chosenCardNum ==  (cardStacks[fromStackNum].size() - 1)) {
-                if (toStackTopCard == null) {      // Если стопка была пустая
-                    if (transferringCard.getType() == 12) {  // Если переносимая карта ТУЗ
-                        isPossible = true;
-                    }
-                }
-                else if ((toStackTopCard.getType() == 12) &&            // Если в домашней стопке ТУЗ, переносится
-                        (transferringCard.getSuit() == toStackTopCard.getSuit()) && // ДВОЙКА и масти совпадают
-                        (transferringCard.getType() == 0)) {
-                    isPossible = true;
-                }
-                else if ((toStackTopCard.getType() >= 0) && // Если в домашней стопке не ТУЗ, но масти совпадают
-                        (toStackTopCard.getType() < 11) &&
-                        (transferringCard.getSuit() == toStackTopCard.getSuit())) {
-                    if ((toStackTopCard.getType() + 1 == transferringCard.getType())) { // Если перенос. к. выше на 1
-                        isPossible = true;
-                    }
-                }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                if (isPossible) {   // Если результат проверки положительный
-                    transferringCard.setX((Constants.betweenCardStacks * (toStackNum + 1)) + 30); // Переносим карту в домашнюю стопку
-                    transferringCard.setY(15);
-                    cardStacks[toStackNum].add(transferringCard);
-                    cardStacks[fromStackNum].remove(chosenCardNum);
-                    checkEndGame();
-                }
+
+        if (toStackNum >= 2 && toStackNum <= 5 &&
+                chosenCardNum == (cardStacks[fromStackNum].size() - 1)) {  // перенос top карты в дом. стопку
+            boolean puttingAce = toStackTopCard == null && transferCardType == 12;
+            boolean puttingTwoOnAce = toCardType == 12 && transferCardType == 0;
+            boolean puttingOther = toCardType <= 11 && toCardType + 1 == transferCardType;
+            isPossible = puttingAce || (puttingTwoOnAce || puttingOther) && toCardSuit == transferCardSuit;
+
+            if (isPossible) { /** мб на один уровень глубже ??? **/
+                transferCardToHome(transferringCard, toStackNum, fromStackNum);
             }
         }
-        if ((toStackNum >= 6) && (toStackNum <= 12)) {    // Если перенос в нижние стопки
-            int x = 30 + (toStackNum - 6) * Constants.betweenCardStacks;
-            int y = 130;
-            if (toStackTopCard == null) {  // Если нижняя стопка была пустая
-                if (transferringCard.getType() == 11) {   // Если переносится КОРОЛЬ
-                    isPossible = true;
-                }
-            }
-            else {   // Если была НЕ пустая
-                if (!toStackTopCard.isTurnedOver()) {     // Если верхняя карта открыта
-                    if (toStackTopCard.getType() != 12) {  // Если переносим НЕ на ТУЗА
-                        if ((toStackTopCard.getType() == transferringCard.getType() + 1) ||   // Если переносимая карта
-                                ((toStackTopCard.getType() == 0) &&                        // на один младше или
-                                        (transferringCard.getType() == 12))) {          // ТУЗ переносится на двойку
-                            if (toStackTopCard.isRed() != transferringCard.isRed()) {  // Если одна масть ЧЕРНАЯ, а другая КРАСНАЯ
-                                y = toStackTopCard.getY() + 20;
-                                isPossible = true;
-                            }
-                        }
-                    }
-                }
-            }
+
+        if ((toStackNum >= 6) && (toStackNum <= 12)) {
+            boolean puttingKing = toStackTopCard == null && transferringCard.getType() == 11;
+            boolean puttingAceOnTwo = transferCardType == 12 && toCardType == 0;
+            boolean puttingOther = toCardType <= 11 && toCardType == transferCardType + 1;
+
+            isPossible = puttingKing || (puttingAceOnTwo || puttingOther) &&
+                    toStackTopCard.isRed() != transferringCard.isRed();     /** не добавил !toStackTopCard.isTurnedOver()**/
+
             if (isPossible) {
-                for (int i = chosenCardNum; i < cardStacks[fromStackNum].size(); i++) {
-                    Card card_ = cardStacks[fromStackNum].get(i); // Добавляем все карты в новую стопу
-                    card_.setX(x);
-                    card_.setY(y);
-                    cardStacks[toStackNum].add(card_);
-                    y += 20;
-                }
-                for (int i = cardStacks[fromStackNum].size() - 1; i >= chosenCardNum; i--) {
-                    cardStacks[fromStackNum].remove(i);   // Удалаяем все карты из старой стопки
-                }
+                transferCardsToLowerStack(toStackTopCard, toStackNum, fromStackNum);
             }
         }
         return isPossible;
+    }
+
+    private void transferCardToHome(Card transferringCard, int toStackNum, int fromStackNum) {
+        transferringCard.setX((Constants.betweenCardStacks * (toStackNum + 1)) + 30); // Переносим карту в домашнюю стопку
+        transferringCard.setY(15);
+        cardStacks[toStackNum].add(transferringCard);
+        cardStacks[fromStackNum].remove(chosenCardNum);
+        checkEndGame();
+    }
+
+    private void transferCardsToLowerStack(Card toStackTopCard, int toStackNum, int fromStackNum) {
+        int y = toStackTopCard == null ? 130 : toStackTopCard.getY() + 20;
+        int x = 30 + (toStackNum - 6) * Constants.betweenCardStacks;
+        for (int i = chosenCardNum; i < cardStacks[fromStackNum].size(); i++) {
+            Card card_ = cardStacks[fromStackNum].get(i); // Добавляем все карты в новую стопку
+            card_.setX(x);
+            card_.setY(y);
+            cardStacks[toStackNum].add(card_);
+            y += 20;
+        }
+        for (int i = cardStacks[fromStackNum].size() - 1; i >= chosenCardNum; i--) {
+            cardStacks[fromStackNum].remove(i);   // Удалаяем все карты из старой стопки
+        }
+
     }
 
     public void getCardFromDeck() {
