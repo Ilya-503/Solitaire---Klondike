@@ -1,6 +1,6 @@
 package view;
 
-import controllers.MouseListeners;
+import controllers.MouseListener;
 import models.Game;
 
 import javax.swing.*;
@@ -10,7 +10,7 @@ public class Window extends JFrame {
 
     public Window() {
         Game game = new Game();
-        Field panel = new Field(new MouseListeners(game), new GameInterface(game));
+        Field panel = new Field(new MouseListener(game), new GameInterface(game));
         Container container = getContentPane();
         container.add(panel);
         setTitle("Игра \"Пасьянс-Косынка\"");

@@ -1,6 +1,6 @@
 package view;
 
-import controllers.MouseListeners;
+import controllers.MouseListener;
 import models.Constants;
 
 import javax.swing.*;
@@ -10,11 +10,11 @@ import java.io.*;
 
 public class Field extends JPanel {
 
-    private final MouseListeners mouseListeners;
+    private final MouseListener mouseListeners;
     private static Image background;
     private final GameInterface gameInterface;
 
-    public Field(MouseListeners mouseListeners, GameInterface gameInterface) {
+    public Field(MouseListener mouseListeners, GameInterface gameInterface) {
         this.mouseListeners = mouseListeners;
         addMouseListener(mouseListeners.getMouseListener());
         addMouseMotionListener(mouseListeners.getMouseActionListener());
@@ -60,6 +60,6 @@ public class Field extends JPanel {
                 gr.drawRect(30 + i * Constants.betweenCardStacks, 15, Constants.cardWidth, Constants.cardHeight);
             }
         }
-        gameInterface.drawStack(gr);
+        gameInterface.drawStacks(gr);
     }
 }

@@ -1,26 +1,22 @@
 package models;
 
-import view.GameInterface;
-
-import java.util.ArrayList;
+import java.util.Stack;
 
 public class Game {
 
-    private final  ArrayList<Card>[] cardStacks;
-    private boolean firstDeckDistribution;     // Признак первой выдачи карт из верхней левой стопки
+    private final Stack<Card>[] cardStacks;
+    private boolean firstDeckDistribution;
     private int chosenStackNum;
     private int chosenCardNum;
     private boolean endGame;
 
     public Game() {
-        cardStacks = new ArrayList[13];
+        cardStacks = new Stack[13];
         for (int i = 0; i < 13; i++) {
-            cardStacks[i] = new ArrayList<>();
+            cardStacks[i] = new Stack<>();
         }
         start();
     }
-
-    // region Старт игры
 
     public void start() {
         for (int i = 0; i < 13; i++) {
@@ -36,53 +32,45 @@ public class Game {
 
     private void loadDeck() {
         for (int i = 1; i <= 52; i++) {
-            cardStacks[0].add(new Card(Constants.path + "k" + (i) + ".png", i));
+            cardStacks[0].push(new Card(Constants.path + "k" + (i) + ".png", i));
         }
-        try {
             Card.setBackImg(Constants.path);
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-        }
     }
 
     private void distribution() {
         int x = 30;
-        for (int i = 6; i < 13; i++) {  // Перебираем все стопки нижние семь стопок
-            for (int j = 6; j <= i; j++) {  // Добавление карт в стопку
-                int rnd = (int)(Math.random() * cardStacks[0].size()); // номер случайной карты из верхней левой стопки
+        for (int i = 6; i < 13; i++) {
+            for (int j = 6; j <= i; j++) {
+                int rnd = (int)(Math.random() * cardStacks[0].size());
                 Card card = cardStacks[0].get(rnd);
-                card.setTurnedOver(j < i);  // Если карта не самая верхняя,то показываем ее рубашкой
+                card.setTurnedOver(j < i);
                 card.setX(x);
-                card.setY(130 + cardStacks[i].size() * 20);  // Каждую следующую карту располагаем ниже на 20 пикселей
-                cardStacks[i].add(card);  // Добавляем карту в нижнюю стопку
-                cardStacks[0].remove(rnd); // Удаляем карту из верхней левой стопки
+                card.setY(130 + cardStacks[i].size() * 20); // Каждую следующую карту располагаем ниже на 20 пикселей
+                cardStacks[i].push(card);
+                cardStacks[0].remove(rnd);
             }
-            x += Constants.betweenCardStacks; //смещаемся правее
+            x += Constants.betweenCardStacks;
         }
     }
 
-    // endregion
-
-
-    public void openTopCard() {
-        for (int i = 6; i <= 12; i++) {
-            if (cardStacks[i].size() > 0) {
-                int lastCardNum = cardStacks[i].size() - 1;
-                Card card = cardStacks[i].get(lastCardNum);
+    public void openTopCard(int num) {
+            if (num > 0 && cardStacks[num].size() > 0) {
+                int lastCardNum = cardStacks[num].size() - 1;
+                Card card = cardStacks[num].get(lastCardNum);
                 if (card.isTurnedOver()) {
                     card.setTurnedOver(false);
-                }
             }
         }
     }
 
     public boolean checkCardTransfer(int fromStackNum, int toStackNum) {
         boolean isPossible = false;
-        Card transferringCard = cardStacks[fromStackNum].get(chosenCardNum); // Карта, которая переносится
+        Card transferringCard = cardStacks[fromStackNum].get(chosenCardNum);
+        int transferCardType = transferringCard.getType();
+        int transferCardSuit = transferringCard.getSuit();
         Card toStackTopCard = null;
-        if (toStackNum != -1 && cardStacks[toStackNum].size() > 0) {  // Если есть карты в стопке
-            toStackTopCard = cardStacks[toStackNum].get(cardStacks[toStackNum].size() - 1); // Получаем верхнюю карту
+        if (toStackNum != -1 && cardStacks[toStackNum].size() > 0) {
+            toStackTopCard = cardStacks[toStackNum].get(cardStacks[toStackNum].size() - 1);
         }
         if ((toStackNum >= 2) && (toStackNum <= 5)) {  // Если четыре домашние стопки
             if (chosenCardNum ==  (cardStacks[fromStackNum].size() - 1)) {
@@ -103,7 +91,7 @@ public class Game {
                         isPossible = true;
                     }
                 }
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 if (isPossible) {   // Если результат проверки положительный
                     transferringCard.setX((Constants.betweenCardStacks * (toStackNum + 1)) + 30); // Переносим карту в домашнюю стопку
                     transferringCard.setY(15);
@@ -152,43 +140,38 @@ public class Game {
     }
 
     public void getCardFromDeck() {
+        int num;
+        Card card;
         if (cardStacks[0].size() > 0) {
-            int num;
             if (firstDeckDistribution) {
                 num = (int)(Math.random() * cardStacks[0].size());
+                card = cardStacks[0].get(num);
             } else {
-                num = cardStacks[0].size() - 1;
+                card = cardStacks[0].pop();
             }
-            Card card = cardStacks[0].get(num);   // Получаем карту из стопки с номером 0
             card.setTurnedOver(false);
-            card.setX(card.getX() + Constants.betweenCardStacks);  //сдвигаем в стопку правее
-            cardStacks[1].add(card);
-            cardStacks[0].remove(num);
-        } else {        // Если карт уже нет
-            int lastCardNum = cardStacks[1].size() - 1; // Вычисляем номер последней карты в стопке номером 1
-            for (int i = lastCardNum; i >= 0; i--) {  // перенос карт из стопки 1 в колоду
-                Card card = cardStacks[1].get(i);
+            card.setX(card.getX() + Constants.betweenCardStacks);
+            cardStacks[1].push(card);
+        } else {
+            for (int i = 0; i < cardStacks[1].size(); i++) {
+                card = cardStacks[1].pop();
                 card.setTurnedOver(true);
-                card.setX(card.getX() - Constants.betweenCardStacks);   // сдвигаем левее
-                cardStacks[0].add(card);
+                card.setX(card.getX() - Constants.betweenCardStacks);
+                cardStacks[0].push(card);
             }
-            cardStacks[1].clear();
             firstDeckDistribution = false;
         }
     }
 
     public void checkEndGame() {
-        if ((cardStacks[2].size() == 13) &&
-                (cardStacks[3].size() == 13) &&
-                (cardStacks[4].size() == 13) &&
-                (cardStacks[5].size() == 13)) {
-            endGame = true;
+        for (int i = 2; i <= 5; i++) {
+            endGame = cardStacks[i].size() == 13;
         }
     }
 
     //region Геттеры и сеттеры
 
-    public ArrayList<Card> getCardStack(int i) {
+    public Stack<Card> getCardStack(int i) {
         return cardStacks[i];
     }
 

@@ -6,17 +6,18 @@ import models.Game;
 
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Stack;
 
-public class MouseListeners {
+public class MouseListener {
     private final Game game;
     private int dx, dy;           // Смещения координат курсора мыши относительно координат карты
     private int oldX ,oldY;       // Координаты карты до начала переноса мышью
 
-    public MouseListeners(Game game) {
+    public MouseListener(Game game) {
         this.game = game;
     }
 
-    public MouseListener getMouseListener() {
+    public java.awt.event.MouseListener getMouseListener() {
         return new myMouseListener();
     }
 
@@ -70,7 +71,7 @@ public class MouseListeners {
 
         private void setChosenCard(int cardStackNum, int mX, int mY) {     // Установка выбранной карты
             if ((cardStackNum >= 1) && (cardStackNum <= 5)) {  // Если верхние стопки (1,2,3,4,5)
-                ArrayList<Card> cardStack = game.getCardStack(cardStackNum);
+                Stack<Card> cardStack = game.getCardStack(cardStackNum);
                 if (cardStack.size() > 0) {
                     int lastCardNum = cardStack.size() - 1;  // Получаем номер верхней карты
                     Card card = cardStack.get(lastCardNum);  // Получаем верхнюю карту
@@ -156,7 +157,7 @@ public class MouseListeners {
                     }
                 }
             }
-            game.openTopCard();
+            game.openTopCard(num);
         }
 
         @Override
@@ -176,7 +177,7 @@ public class MouseListeners {
             int chosenCardNum = game.getChosenCardNum();
 
             if (chosenStackNum != -1) {       // Если какая-то стопка выбрана в режиме переноса
-                ArrayList<Card> cardStack = game.getCardStack(chosenStackNum);
+                Stack<Card> cardStack = game.getCardStack(chosenStackNum);
                 cardStack.get(chosenCardNum).setChosen(false);     // Убираем признак у выбранной карты
                 boolean isPossible = game.checkCardTransfer(chosenStackNum, num);
                 if ((num == -1) || (!isPossible)) {   // Если после переноса стопка не выбрана | перенос оказался ошибочным
@@ -190,7 +191,7 @@ public class MouseListeners {
                 }
                 game.setChosenCardNum(-1);
                 game.setChosenStackNum(-1);
-                game.openTopCard();
+                game.openTopCard(chosenStackNum);
             } else {
                 if (num == 0) {  // Если верхняя левая стопка
                     game.getCardFromDeck();
@@ -215,7 +216,7 @@ public class MouseListeners {
             int chosenCardNum = game.getChosenCardNum();
 
             if (chosenStackNum >= 0) {
-                ArrayList<Card> cardStack = game.getCardStack(chosenStackNum);
+                Stack<Card> cardStack = game.getCardStack(chosenStackNum);
                 Card card = cardStack.get(chosenCardNum);
                 card.setX(mX - dx);
                 card.setY(mY - dy);
