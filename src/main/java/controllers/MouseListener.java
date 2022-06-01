@@ -26,6 +26,7 @@ public class MouseListener {
         return new myMouseActionListener();
     }
 
+    //region Иннер классы, обрабатывающие клики мышы
 
     class myMouseListener extends MouseAdapter {
 
@@ -59,7 +60,7 @@ public class MouseListener {
                 if ((mX >= 580) && (mX <= (580 + Constants.cardWidth))) num = 4;
                 if ((mX >= 690) && (mX <= (690 + Constants.cardWidth))) num = 5;
             }
-            else if ((mY >= 130) && (mY <= 700)) {   // Если курсор находится в зоне нижних стопок
+            else if ((mY >= 130) && (mY <= 400)) {   // Если курсор находится в зоне нижних стопок
                 if ((mX >= 30) && (mX <= Constants.betweenCardStacks * 7)) {
                     if (((mX - 30) % Constants.betweenCardStacks) <= Constants.cardWidth) {
                         num = (mX - 30) / Constants.betweenCardStacks;
@@ -78,10 +79,9 @@ public class MouseListener {
                     int lastCardNum = stackSize - 1;
                     Card card = cardStack.get(lastCardNum);
 
-                if ((cardStackNum >= 1) && (cardStackNum <= 5)) {
+                if (cardStackNum >= 1 && cardStackNum <= 5) {
                     setCard(card, lastCardNum, cardStackNum, mX, mY);
-
-                } else if ((cardStackNum >= 6) && (cardStackNum <= 12)) {
+                } else if (cardStackNum >= 6 && cardStackNum <= 12) {
 
                     // Если выбрана верхня карта - присваиваем ее номер, иначе - находим координаты выбран.
                     // карты и проверяем, не лежит ли она рубашкой.
@@ -116,7 +116,7 @@ public class MouseListener {
                 if (game.getCardStack(num).size() > 0) {
                     int topCardNum = game.getCardStack(num).size() - 1;
                     Card topCard = game.getCardStack(num).get(topCardNum);
-                    if ((mY >= topCard.getY()) && (mY <= (topCard.getY() + Constants.cardHeight))) {      /** А это что ????? **/
+                    if ((mY >= topCard.getY()) && (mY <= (topCard.getY() + Constants.cardHeight))) {
                         for (int i = 2; i <= 5; i++) {
                             int availStackNum;
                             boolean result = game.checkTransferToHome(game.getCardStack(i), topCard);
@@ -125,8 +125,8 @@ public class MouseListener {
                                 topCard.setX (Constants.betweenCardStacks * (availStackNum + 1)
                                         + 30);  // Изменяем координаты на домашнюю стопку
                                 topCard.setY(15);
-                                game.getCardStack(availStackNum).add(topCard); // Добавляем в домашнюю стопку
-                                game.getCardStack(num).remove(topCardNum); // Удалаяем из старой стопки
+                                game.getCardStack(availStackNum).add(topCard);
+                                game.getCardStack(num).remove(topCardNum);
                                 game.checkEndGame();
                                 break;
                             }
@@ -213,4 +213,6 @@ public class MouseListener {
             }
         }
     }
+
+    //endregion
 }

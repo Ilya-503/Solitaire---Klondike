@@ -10,12 +10,10 @@ import java.io.*;
 
 public class Field extends JPanel {
 
-    private final MouseListener mouseListeners;
     private static Image background;
     private final GameInterface gameInterface;
 
     public Field(MouseListener mouseListeners, GameInterface gameInterface) {
-        this.mouseListeners = mouseListeners;
         addMouseListener(mouseListeners.getMouseListener());
         addMouseMotionListener(mouseListeners.getMouseActionListener());
 
