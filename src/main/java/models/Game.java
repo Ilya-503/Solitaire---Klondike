@@ -185,10 +185,11 @@ public class Game {
     }
 
     public void checkEndGame() {
-        for (int i = 2; i <= 5; i++) {
-            endGame = cardStacks[i].size() == 13;
-        }
-        if (endGame) {
+        if ((cardStacks[2].size() == 13) &&
+                (cardStacks[3].size() == 13) &&
+                (cardStacks[4].size() == 13) &&
+                (cardStacks[5].size() == 13)) {
+            endGame = true;
             tmEndGame.start();
         }
     }
