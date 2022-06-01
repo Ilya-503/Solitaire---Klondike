@@ -62,9 +62,7 @@ public class Game {
     public boolean checkCardTransfer(int fromStackNum, int toStackNum) {
         boolean isPossible = false;
         int fromStackSize = cardStacks[fromStackNum].size();
-        Card transferringCard = chosenCardNum >= 0 && fromStackSize > 0 ?
-                cardStacks[fromStackNum].get(chosenCardNum) : null;
-        System.out.println(chosenCardNum);  /** ПРОВЕРКА **/
+        Card transferringCard = chosenCardNum >= 0 && fromStackSize > 0 ? cardStacks[fromStackNum].get(chosenCardNum) : null;
         ArrayList<Card> toStack = null;
         int toStackSize = 0;
 
@@ -82,7 +80,7 @@ public class Game {
         if ((toStackNum >= 6) && (toStackNum <= 12)) {
             isPossible = checkTransferToLowerStack(toStack, transferringCard);
             if (isPossible) {
-                transferCardsToLowerStack(toStack.get(toStackSize - 1), toStackNum, fromStackNum);
+                transferCardsToLowerStack(toStack, toStackNum, fromStackNum);
             }
         }
         return isPossible;
@@ -129,8 +127,8 @@ public class Game {
         checkEndGame();
     }
 
-    public void transferCardsToLowerStack(Card toStackTopCard, int toStackNum, int fromStackNum) {
-        int y = toStackTopCard == null ? 130 : toStackTopCard.getY() + 20;
+    public void transferCardsToLowerStack(ArrayList<Card> toStack, int toStackNum, int fromStackNum) {
+        int y = toStack.size() == 0 ? 130 : toStack.get(toStack.size() - 1).getY() + 20;
         int x = 30 + (toStackNum - 6) * Constants.betweenCardStacks;
         for (int i = chosenCardNum; i < cardStacks[fromStackNum].size(); i++) {
             Card card_ = cardStacks[fromStackNum].get(i); // Добавляем все карты в новую стопку

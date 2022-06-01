@@ -154,10 +154,10 @@ public class MouseListener {
             int chosenCardNum = game.getChosenCardNum();
 
             if (chosenStackNum != -1) {       // Если какая-то стопка выбрана в режиме переноса
-                ArrayList<Card> chosenCardStack = game.getCardStack(chosenStackNum);
-                chosenCardStack.get(chosenCardNum).setChosen(false);     // Убираем признак у выбранной карты
-                // boolean isPossible =
-                if ((num == -1) || (!game.checkCardTransfer(num, chosenStackNum))) {   // Если после переноса стопка не выбрана | перенос оказался ошибочным
+                ArrayList<Card> cardStack = game.getCardStack(chosenStackNum);
+                cardStack.get(chosenCardNum).setChosen(false);
+                boolean isPossible = game.checkCardTransfer(chosenStackNum, num);
+                if ((num == -1) || (!isPossible)) {   // Если после переноса стопка не выбрана |
                     int y = 0;
                     for (int i = chosenCardNum; i < game.getCardStack(chosenStackNum).size(); i++) {   // Возвращаем все переносимые карты назад
                         Card card = game.getCardStack(chosenStackNum).get(i);
@@ -170,7 +170,7 @@ public class MouseListener {
                 game.setChosenStackNum(-1);
                 game.openTopCard(chosenStackNum);
             } else {
-                if (num == 0) {
+                if (num == 0) {  // Если верхняя левая стопка
                     game.getCardFromDeck();
                 }
             }
