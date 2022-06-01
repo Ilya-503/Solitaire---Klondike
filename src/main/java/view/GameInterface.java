@@ -4,33 +4,17 @@ import models.Card;
 import models.Constants;
 import models.Game;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
 public class GameInterface {
 
-    private final Timer tmEndGame;
     private final Game game;
-    private boolean gameEnded;
 
     public GameInterface(Game game) {
         this.game = game;
         game.start();
-
-        tmEndGame = new Timer(100, arg0 -> {
-            gameEnded = game.isEndGame();
-            if (gameEnded) {
-            for (int i = 2; i <= 5; i++) {
-                ArrayList<Card> cardStack = game.getCardStack(i);
-                Card card = cardStack.get(0);
-                cardStack.add(card);
-                cardStack.remove(0);
             }
-            }
-        });
-        tmEndGame.start();
-    }
 
     public void restartGame() {
         game.start();

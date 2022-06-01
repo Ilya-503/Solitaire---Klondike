@@ -1,6 +1,7 @@
 package models;
 
 import java.util.ArrayList;
+import javax.swing.Timer;
 
 public class Game {
 
@@ -9,12 +10,22 @@ public class Game {
     private int chosenStackNum;
     private int chosenCardNum;
     private boolean endGame;        /** нужна только для отрисовки и в MouseListener **/
+    private final Timer tmEndGame;
 
     public Game() {
         cardStacks = new ArrayList[13];
         for (int i = 0; i < 13; i++) {
             cardStacks[i] = new ArrayList<>();
         }
+
+        tmEndGame = new Timer(100, arg0 -> {
+                for (int i = 2; i <= 5; i++) {
+                    Card card = cardStacks[i].get(0);
+                    cardStacks[i].add(card);
+                    cardStacks[i].remove(0);
+                }
+        });
+
         start();
     }
 
@@ -176,6 +187,9 @@ public class Game {
     public void checkEndGame() {
         for (int i = 2; i <= 5; i++) {
             endGame = cardStacks[i].size() == 13;
+        }
+        if (endGame) {
+            tmEndGame.start();
         }
     }
 

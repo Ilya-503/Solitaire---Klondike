@@ -86,7 +86,7 @@ public class MouseListener {
                     // Если выбрана верхня карта - присваиваем ее номер, иначе - находим координаты выбран.
                     // карты и проверяем, не лежит ли она рубашкой.
                     int chosenNum = mY >= card.getY() && mY <= (card.getY() + Constants.cardHeight) ? lastCardNum :
-                            mY < card.getY() && game.getCardStack(cardStackNum).get((mY - 130) / 20).isTurnedOver() ?
+                            mY < card.getY() && !game.getCardStack(cardStackNum).get((mY - 130) / 20).isTurnedOver() ?
                                     (mY - 130) / 20 : -1;
 
                         if (chosenNum != -1) {
