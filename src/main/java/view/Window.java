@@ -1,5 +1,6 @@
 package view;
 
+import controllers.GameLogic;
 import controllers.MouseListener;
 import models.Game;
 
