@@ -14,7 +14,7 @@ public class GameInterface {
     public GameInterface(Game game) {
         this.game = game;
         game.start();
-            }
+    }
 
     public void restartGame() {
         game.start();

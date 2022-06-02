@@ -1,5 +1,7 @@
 package models;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import javax.imageio.*;
 import java.awt.*;
 import java.io.*;
@@ -7,27 +9,21 @@ import java.io.*;
 public class Card {
 
     private static Image backImg;
-
-    private Image frontImg;
-    private int x, y;
-    private final int suit;
-    private final int cardType;
-    private boolean chosen;
+    private final Image frontImg;
     private final boolean redSuit;
+    private final int suit;
+    private final int type;
+    private int x, y;
+    private boolean chosen;
     private boolean turnedOver;
 
-
-    public Card(String path, int num) {
-        try {
-            frontImg = ImageIO.read(new File(path));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+    public Card(String path, int num) throws Exception {
+        frontImg = ImageIO.read(new File(path));
         x = 30;
         y = 15;
         turnedOver = true;
         suit = (num - 1) % 4;   // крести - пики - черви - бубны
-        cardType = (num - 1) / 4;
+        type = (num - 1) / 4;
         redSuit = suit > 1;    // 1,2 - черные, 3,4 - красные, 5,6 - черные ...
     }
 
@@ -48,16 +44,16 @@ public class Card {
         return frontImg;
     }
 
-    public int getType() {
-        return cardType;
+    public boolean isRed() {
+        return redSuit;
     }
 
     public int getSuit() {
         return suit;
     }
 
-    public boolean isRed() {
-        return redSuit;
+    public int getType() {
+        return type;
     }
 
     public int getX() {
@@ -76,14 +72,6 @@ public class Card {
         this.y = y;
     }
 
-    public boolean isTurnedOver() {
-        return turnedOver;
-    }
-
-    public void setTurnedOver(boolean turnedOver) {
-        this.turnedOver = turnedOver;
-    }
-
     public boolean isChosen() {
         return chosen;
     }
@@ -92,4 +80,40 @@ public class Card {
         this.chosen = chosen;
     }
 
+    public boolean isTurnedOver() {
+        return turnedOver;
+    }
+
+    public void setTurnedOver(boolean turnedOver) {
+        this.turnedOver = turnedOver;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(redSuit)
+                .append(suit)
+                .append(type)
+                .toHashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj instanceof Card) {
+            Card card = (Card) obj;
+            return card.frontImg == frontImg && card.redSuit == redSuit
+                    && card.suit == suit && card.type == type
+                    && card.chosen == chosen && card.turnedOver == turnedOver;
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return "Suit: " + suit + ", type: " + type
+                + ", is" + (chosen ? " " : "n't ") + "chosen"
+                + ", is" + (isTurnedOver() ? " " : "n't ") + "turned over";
+    }
 }

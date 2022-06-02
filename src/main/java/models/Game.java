@@ -9,7 +9,7 @@ public class Game {
     private boolean firstDeckDistribution;
     private int chosenStackNum;
     private int chosenCardNum;
-    private boolean endGame;        /** нужна только для отрисовки и в MouseListener **/
+    private boolean endGame;
     private final Timer tmEndGame;
 
     public Game() {
@@ -29,6 +29,34 @@ public class Game {
         start();
     }
 
+    //region Геттеры и сеттеры
+
+    public ArrayList<Card> getCardStack(int i) {
+        return cardStacks[i];
+    }
+
+    public boolean isEndGame() {
+        return endGame;
+    }
+
+    public int getChosenStackNum() {
+        return chosenStackNum;
+    }
+
+    public void setChosenStackNum(int stackNum) {
+        chosenStackNum = stackNum;
+    }
+
+    public int getChosenCardNum() {
+        return chosenCardNum;
+    }
+
+    public void setChosenCardNum(int cardNum) {
+        chosenCardNum = cardNum;
+    }
+
+    //endregion
+
     //region Старт игры
 
     public void start() {
@@ -44,10 +72,14 @@ public class Game {
     }
 
     private void loadDeck() {
-        for (int i = 1; i <= 52; i++) {
-            cardStacks[0].add(new Card(Constants.path + "k" + (i) + ".png", i));
-        }
+        try {
+            for (int i = 1; i <= 52; i++) {
+                cardStacks[0].add(new Card(Constants.path + "k" + (i) + ".png", i));
+            }
             Card.setBackImg(Constants.path);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     private void distribution() {
@@ -160,7 +192,7 @@ public class Game {
         }
     }
 
-    public void getCardFromDeck() {
+    public void putCardFromDeck() {
         int num;
         if (cardStacks[0].size() > 0) {
             num = firstDeckDistribution ?
@@ -193,35 +225,6 @@ public class Game {
             tmEndGame.start();
         }
     }
-
-    //region Геттеры и сеттеры
-
-    public ArrayList<Card> getCardStack(int i) {
-        return cardStacks[i];
-    }
-
-    public boolean isEndGame() {
-        return endGame;
-    }
-
-    public int getChosenStackNum() {
-        return chosenStackNum;
-    }
-
-    public void setChosenStackNum(int stackNum) {
-        chosenStackNum = stackNum;
-    }
-
-    public int getChosenCardNum() {
-        return chosenCardNum;
-    }
-
-    public void setChosenCardNum(int cardNum) {
-        chosenCardNum = cardNum;
-    }
-
-    //endregion
-
 }
 
 

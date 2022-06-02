@@ -45,6 +45,17 @@ public class MouseListener {
             }
         }
 
+        @Override
+        public void mouseReleased(MouseEvent e) {  // При отпускании кнопки мыши
+            if (!game.isEndGame()) {
+                int mX = e.getX();
+                int mY = e.getY();
+                if (e.getButton() == 1) {
+                    mouseReleased(mX, mY);
+                }
+            }
+        }
+
         private void mousePressed(int mX, int mY) {
             int num = getPressedStackNum(mX, mY);
             setChosenCard(num, mX, mY);
@@ -137,17 +148,6 @@ public class MouseListener {
             game.openTopCard(num);
         }
 
-        @Override
-        public void mouseReleased(MouseEvent e) {  // При отпускании кнопки мыши
-            if (!game.isEndGame()) {
-                int mX = e.getX();
-                int mY = e.getY();
-                if (e.getButton() == 1) {
-                    mouseReleased(mX, mY);
-                }
-            }
-        }
-
         private void mouseReleased(int mX, int mY) {
             int num = getPressedStackNum(mX, mY);
             int chosenStackNum = game.getChosenStackNum();
@@ -171,7 +171,7 @@ public class MouseListener {
                 game.openTopCard(chosenStackNum);
             } else {
                 if (num == 0) {  // Если верхняя левая стопка
-                    game.getCardFromDeck();
+                    game.putCardFromDeck();
                 }
             }
         }
