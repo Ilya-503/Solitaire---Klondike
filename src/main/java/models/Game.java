@@ -165,7 +165,7 @@ public class Game {
         checkEndGame();
     }
 
-    public void transferCardsToLowerStack(ArrayList<Card> toStack, int toStackNum, int fromStackNum) {
+    private void transferCardsToLowerStack(ArrayList<Card> toStack, int toStackNum, int fromStackNum) {
         int y = toStack.size() == 0 ? 130 : toStack.get(toStack.size() - 1).getY() + 20;
         int x = 30 + (toStackNum - 6) * Constants.betweenCardStacks;
         for (int i = chosenCardNum; i < cardStacks[fromStackNum].size(); i++) {

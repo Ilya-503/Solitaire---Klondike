@@ -103,7 +103,7 @@ public class Card {
             return true;
         if (obj instanceof Card) {
             Card card = (Card) obj;
-            return card.frontImg == frontImg && card.redSuit == redSuit
+            return card.redSuit == redSuit
                     && card.suit == suit && card.type == type
                     && card.chosen == chosen && card.turnedOver == turnedOver;
         }

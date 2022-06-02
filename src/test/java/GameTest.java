@@ -12,6 +12,7 @@ import static org.junit.Assert.*;
 public class GameTest {
 
     private Game game;
+    private String path = Constants.path + "k0.png";
 
     @Before
     public void init() {
@@ -66,20 +67,22 @@ public class GameTest {
         ArrayList<Card> toCardStack = game.getCardStack(6),
         fromCardStack = game.getCardStack(7);
         toCardStack.remove(0);
-        fromCardStack.add(new Card(Constants.path + "k0.png", 47)); // красный король на пустое место
+        fromCardStack.add(new Card(path, 47)); // красный король на пустое место
         game.setChosenCardNum(fromCardStack.size() - 1);
         assertTrue(game.checkCardTransfer(7, 6));
+        assertEquals(new Card(path, 47), toCardStack.get(0));
 
-        fromCardStack.add(new Card(Constants.path + "k0.png", 43)); // красная дама на красного короля
+        fromCardStack.add(new Card(path, 43)); // красная дама на красного короля
         game.setChosenCardNum(fromCardStack.size() - 1);
         assertFalse(game.checkCardTransfer(7, 6));
 
-        fromCardStack.add(new Card(Constants.path + "k0.png", 42)); // черная дама на красного короля
+        fromCardStack.add(new Card(path, 42)); // черная дама на красного короля
         game.setChosenCardNum(fromCardStack.size() - 1);
         assertTrue(game.checkCardTransfer(7, 6));
+        assertEquals(new Card(path, 42), toCardStack.get(toCardStack.size() - 1));
 
-        fromCardStack.add(new Card(Constants.path + "k0.png", 49)); // черный туз на красную двойку
-        toCardStack.add(new Card(Constants.path + "k0.png", 3));
+        fromCardStack.add(new Card(path, 49)); // черный туз на красную двойку
+        toCardStack.add(new Card(path, 3));
         game.setChosenCardNum(fromCardStack.size() - 1);
         assertTrue(game.checkCardTransfer(7, 6));
     }
@@ -87,19 +90,25 @@ public class GameTest {
     @Test
     public void testCardTransferToHome() throws Exception {
         ArrayList<Card> toCardStack = game.getCardStack(2);
+        ArrayList<Card> fromCardStack = game.getCardStack(9);
         assertFalse(game.checkTransferToHome(toCardStack,
-                new Card(Constants.path + "k0.png", 2))); // двойка на пустое место
+                new Card(path, 2))); // двойка на пустое место
 
         assertTrue(game.checkTransferToHome(toCardStack,
-                new Card(Constants.path + "k0.png", 50))); // туз-пики на пустое место
+                new Card(path, 50))); // туз-пики на пустое место
+        fromCardStack.add(new Card(path, 50));
+        game.setChosenCardNum(fromCardStack.size() - 1);
+        game.transferCardToHome(fromCardStack.get(fromCardStack.size() - 1), 2, 9);
+        assertEquals(new Card(path, 50), toCardStack.get(toCardStack.size() - 1));
 
-        toCardStack.add(new Card(Constants.path + "k0.png", 50));
         assertTrue(game.checkTransferToHome(toCardStack,
-                new Card(Constants.path + "k0.png", 2))); // двойка-пики на туз
+                new Card(path, 2))); // двойка-пики на туз
+        fromCardStack.add(new Card(path, 2));
+        game.setChosenCardNum(fromCardStack.size() - 1);
+        game.transferCardToHome(fromCardStack.get(fromCardStack.size() - 1), 2, 9);
+        assertEquals(new Card(path, 2), toCardStack.get(toCardStack.size() - 1));
 
         assertFalse(game.checkTransferToHome(toCardStack,
-                new Card(Constants.path + "k0.png", 3))); // красная двойка на черного туза
+                new Card(path, 3))); // красная двойка на черного туза
     }
-
-
 }
