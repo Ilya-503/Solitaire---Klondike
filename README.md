@@ -1,3 +1,6 @@
-BY: Shumilov Ilya, 3530901\10003
 
-*ADD FUNC:* double click on a card to put it in the home stack automatically
+# Пасьянс - косынка
+
+Правила: https://ru.wikipedia.org/wiki/%D0%9A%D0%BE%D1%81%D1%8B%D0%BD%D0%BA%D0%B0_(%D0%BF%D0%B0%D1%81%D1%8C%D1%8F%D0%BD%D1%81)
+
+*доп. функционал*: двойной клик по открытой карте для её автоматического переноса в домашнюю стопку (если это возможно)

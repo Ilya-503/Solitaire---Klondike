@@ -154,7 +154,7 @@ public class Game {
         boolean puttingOther = toCardType <= 11 && toCardType == transferCardType + 1;
 
         return puttingKing || (puttingAceOnTwo || puttingOther) &&
-                toCardIsRed != transferringCard.isRed();  /** !toStackTopCard.isTurnedOver() **/
+                toCardIsRed != transferringCard.isRed();  /* !toStackTopCard.isTurnedOver() */
     }
 
     public void transferCardToHome(Card transferringCard, int toStackNum, int fromStackNum) {
@@ -169,14 +169,14 @@ public class Game {
         int y = toStack.size() == 0 ? 130 : toStack.get(toStack.size() - 1).getY() + 20;
         int x = 30 + (toStackNum - 6) * Constants.betweenCardStacks;
         for (int i = chosenCardNum; i < cardStacks[fromStackNum].size(); i++) {
-            Card card_ = cardStacks[fromStackNum].get(i); // все карты в новую стопку
+            Card card_ = cardStacks[fromStackNum].get(i);
             card_.setX(x);
             card_.setY(y);
             cardStacks[toStackNum].add(card_);
             y += 20;
         }
         for (int i = cardStacks[fromStackNum].size() - 1; i >= chosenCardNum; i--) {
-            cardStacks[fromStackNum].remove(i);   // Удалаяем все карты из старой стопки
+            cardStacks[fromStackNum].remove(i);
         }
     }
 

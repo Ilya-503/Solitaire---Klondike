@@ -56,10 +56,6 @@ public class GameTest {
             assertNotEquals(isTurnedOved, openedCard.isTurnedOver());
             assertFalse(openedCard.isTurnedOver());
         }
-
-
-
-
     }
 
     @Test
